@@ -1,0 +1,102 @@
+# 🤖 Groq-Powered RAG Chatbot
+
+A high-performance RAG (Retrieval-Augmented Generation) chatbot built with **LangChain 0.3** and **Groq**. This bot retrieves context from a local `data.txt` file to provide accurate, grounded answers to user queries.
+
+## 🚀 Key Features
+
+* **Ultrafast Inference:** Uses Groq’s LPU (Language Processing Unit) for near-instant responses.
+* **Modern LCEL:** Built using LangChain Expression Language (LCEL) for improved reliability over deprecated `langchain.chains` modules.
+* **Local Vector Intelligence:** Uses `ChromaDB` and `HuggingFaceEmbeddings` to process and search your data locally.
+
+---
+
+## 🛠️ Setup Instructions
+
+### 1. Environment Configuration
+
+First, clone the repository and navigate to your project folder.
+
+**Create a Virtual Environment:**
+It is highly recommended to use a virtual environment to avoid version conflicts.
+
+```bash
+# Create the environment
+python -m venv venv
+
+# Activate it (Windows)
+venv\Scripts\activate
+
+# Activate it (Mac/Linux)
+source venv/bin/activate
+
+```
+
+**Install Dependencies:**
+
+```bash
+pip -r requirements.txt
+
+```
+
+### 2. Get Your API Key
+
+1. Go to the [Groq Cloud Console](https://console.groq.com/).
+2. Navigate to **API Keys** and click **Create API Key**.
+3. Copy the key immediately.
+
+### 3. Environment Variables
+
+Create a file named `.env` in the root directory and paste your key:
+
+```text
+GROQ_API_KEY=your_actual_key_here
+
+```
+
+---
+
+## 📂 Data Preparation
+
+The bot answers questions based on a file named `data.txt`.
+
+1. Create a `data.txt` file in the main folder.
+2. Paste any text data you want the chatbot to "know."
+3. The bot will automatically chunk this text and create a local vector database in the `/db` folder upon the first run.
+
+---
+
+## 🏃 How to Run
+
+Simply execute the script:
+
+```bash
+python sample_chatbot.py
+
+```
+
+Type `exit` or `quit` to end the session.
+
+---
+
+## 🧠 Why this Architecture?
+
+* **VectorStore Search:** Instead of sending the whole document to the AI (which is expensive and slow), we only send the top 3 most relevant snippets.
+* **LCEL Pipeline:** We replaced the legacy `RetrievalQA` black-box with a transparent pipeline (`retriever | prompt | llm`). This prevents the `ModuleNotFoundError` common in newer LangChain versions.
+* **Groq vs. OpenAI:** Groq provides a generous free tier for developers with speeds that far exceed standard API endpoints.
+
+---
+
+## 🧪 5 Sample Queries to Test
+
+* *"I have an issue with my hardware."*
+* *"What can I do to make my system last long?"*
+* *"What are the main categories of issues mentioned in the document?"*
+* *"Summarize the maintenance practices suggested."*
+* *"Based on the context, how should I start troubleshooting?"*
+
+
+---
+
+### Pro-Tip
+
+If you change the content of `data.txt`, you may want to delete the `chroma_db` folder to force the chatbot to re-index your new information.
