@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>PDF/Text AI Agent</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>PDF/Text AI Agent</h1>
+
+        <textarea id="userInput" placeholder="Enter your text here..." rows="6"></textarea>
+        <br>
+        <input type="file" id="pdfFile" accept=".pdf">
+        <br><br>
+        <button onclick="sendToAPI()">Submit</button>
+
+        <h2>Response:</h2>
+        <pre id="responseOutput"></pre>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
