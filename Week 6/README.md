@@ -1,129 +1,195 @@
-Here's a comprehensive README.md file for your RAG-powered Q&A notebook:
+````markdown
+# AI Engineering Bootcamp - Week 8
 
-```markdown
-# RAG-Powered Yogurt Preparation Q&A System
+## 📌 Overview
 
-A Retrieval-Augmented Generation (RAG) system that answers questions about yogurt preparation using content from a knowledge base. The system combines document retrieval with Groq's LLM to provide accurate, context-aware responses.
+This project builds on the Week 6 agent system by introducing an **evaluation and accuracy testing framework** for chatbot responses.
 
-## 📋 Overview
+The system now not only generates answers using an AI agent but also **measures how accurate those answers are** against expected outputs using semantic similarity and optional LLM-based evaluation.
 
-This notebook implements a RAG (Retrieval-Augmented Generation) pipeline that:
-1. Loads and processes yogurt preparation documentation
-2. Creates vector embeddings for semantic search
-3. Retrieves relevant context for user queries
-4. Generates accurate answers using Groq's LLM
+---
 
-## 🚀 Features
+## 🚀 Week 8 Deliverables
 
-- **Document Processing**: Splits text into manageable chunks with configurable overlap
-- **Semantic Search**: Uses sentence-transformers for accurate document retrieval
-- **Vector Storage**: ChromaDB for efficient similarity search
-- **LLM Integration**: Groq's LLaMA 3.3 70B model for answer generation
-- **Source Attribution**: Returns source documents alongside answers for transparency
+### ✅ Added Features
+- Test case dataset for evaluation
+- Automated chatbot response testing
+- Semantic similarity scoring using embeddings
+- Pass / Fail classification system
+- Accuracy summary reporting
+- (Optional) LLM-based evaluation for deeper validation
 
-## 📦 Dependencies
+---
 
-```python
-langchain
-langchain-community
-langchain-groq
-sentence-transformers
-chromadb
+## ⚙️ Prerequisites
+
+- Python 3.11
+- Required dependencies (see installation below)
+
+---
+
+## 🔧 Setup
+
+1. (Optional but recommended) Create and activate a virtual environment:
+
+### Windows PowerShell
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+````
+
+### Windows Command Prompt
+
+```cmd
+python -m venv venv
+venv\Scripts\activate.bat
 ```
 
-## 🔧 Installation
+---
 
-1. Clone this repository
 2. Install dependencies:
+
 ```bash
-pip install langchain langchain-community langchain-groq sentence-transformers chromadb
+pip install -r requirements.txt
 ```
-3. Set up your Groq API key (see Configuration section)
 
-## ⚙️ Configuration
+> Ensure the following are included:
 
-### Groq API Key
-Replace the placeholder in the notebook with your actual Groq API key:
+* sentence-transformers
+* pandas
+
+---
+
+## ▶️ Running the Application
+
+To run the main chatbot system:
+
+```bash
+python main.py
+```
+
+---
+
+## 🧪 Running Evaluation Tests
+
+The evaluation system tests chatbot responses against predefined expected answers.
+
+### Step 1: Define Test Cases
+
+Test cases are structured as:
+
 ```python
-os.environ["GROQ_API_KEY"] = "your-actual-api-key-here"
+{
+    "id": "TC001",
+    "query": "Your question here",
+    "expected": "Expected answer here"
+}
 ```
 
-Get your API key from [Groq Console](https://console.groq.com)
+---
 
-### Model Configuration
-The system uses:
-- **Embedding Model**: `sentence-transformers/all-MiniLM-L6-v2`
-- **LLM Model**: `llama-3.3-70b-versatile` (configurable in notebook)
+### Step 2: Run Evaluation
+
+The evaluation pipeline will:
+
+1. Send queries to the chatbot
+2. Capture responses
+3. Compare with expected answers
+4. Compute similarity scores
+5. Classify results (Pass / Partial / Fail)
+
+---
+
+### Step 3: View Results
+
+Outputs include:
+
+* Query
+* Expected Answer
+* Actual Answer
+* Similarity Score
+* Result (Pass/Fail)
+
+---
+
+## 📊 Evaluation Metrics
+
+### 1. Semantic Similarity
+
+* Uses `sentence-transformers`
+* Cosine similarity scoring
+
+| Score Range | Result  |
+| ----------- | ------- |
+| ≥ 0.85      | Pass    |
+| 0.70 – 0.84 | Partial |
+| < 0.70      | Fail    |
+
+---
+
+### 2. (Optional) LLM-Based Evaluation
+
+* Uses the LLM to judge correctness
+* Handles paraphrased answers better than strict matching
+
+---
 
 ## 📁 File Structure
 
-- `Week 6.ipynb` - Main notebook with RAG implementation
-- `Youghurt.txt` - Knowledge base containing yogurt preparation documentation
-- `README.md` - This file
+* `main.py` → Entry point of the application
+* `agent.py` → Core chatbot/agent logic
+* `tools.py` → Utility/helper functions
+* `evaluation.py` → **(New)** Evaluation pipeline logic
+* `test_cases.json` / `.csv` → **(New)** Test dataset
 
-## 🎯 Usage
+---
 
-1. Ensure `Youghurt.txt` is in the same directory as the notebook
-2. Run all cells in the notebook
-3. Modify the query in the last cell to ask different questions:
-```python
-query = "How long does youghurt preparation take?"  # Change this
-response = qa_chain(query)
+## 🧠 How It Works
+
+```
+User Query → Agent → Response
+                        ↓
+                Evaluation Module
+                        ↓
+        Score + Classification + Report
 ```
 
-## 💡 Example Query
+---
 
-**Input**: "How long does youghurt preparation take?"
+## 📈 Example Output
 
-**Output**:
-- Generated answer with specific timeframes
-- Source documents used for the answer
+| ID    | Query      | Score | Result  |
+| ----- | ---------- | ----- | ------- |
+| TC001 | Greeting   | 0.92  | Pass    |
+| TC002 | Info Query | 0.81  | Partial |
+| TC003 | Edge Case  | 0.45  | Fail    |
 
-## ⚙️ Customization
+---
 
-### Adjust Chunk Size
-Modify the text splitter parameters:
-```python
-text_splitter = RecursiveCharacterTextSplitter(
-    chunk_size=300,  # Change this
-    chunk_overlap=50  # Change this
-)
+## 💡 Notes
+
+* Evaluation helps identify weak areas in chatbot performance
+* Improves reliability and trustworthiness of AI responses
+* Can be extended with dashboards or logging systems
+
+---
+
+## 🔮 Future Improvements
+
+* Add real-time evaluation dashboard
+* Integrate evaluation into API responses
+* Track response latency and confidence
+* Auto-generate test cases from documents
+* Store evaluation history for model comparison
+
+---
+
+## 🧾 Summary
+
+Week 8 transforms the chatbot from a simple response generator into a **measurable AI system**, enabling continuous improvement through structured evaluation.
+
+---
+
 ```
 
-### Modify Retrieval
-Change the number of retrieved documents:
-```python
-retriever = vectorstore.as_retriever(search_kwargs={"k": 3})  # Adjust k value
-```
-
-### Change LLM Model
-Use different Groq models:
-```python
-llm = ChatGroq(
-    model_name="mixtral-8x7b-32768",  # Alternative model
-    temperature=0
-)
-```
-
-## 📊 Performance Considerations
-
-- **Chunk Size**: 300 characters with 50-character overlap provides good balance
-- **Retrieval**: Top 3 documents are retrieved for context
-- **Temperature**: Set to 0 for consistent, factual responses
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **"IProgress not found" warning**
-   - Install ipywidgets: `pip install ipywidgets`
-   - Run: `jupyter nbextension enable --py widgetsnbextension`
-
-2. **Groq API Key errors**
-   - Verify API key is correctly set
-   - Check internet connection
-   - Ensure API key has sufficient credits
-
-3. **Missing dependencies**
-   - Run installation command with all required packages
 
