@@ -1,0 +1,14 @@
+package org.example;
+
+public class AIResponse {
+
+    private String answer;
+
+    public String getAnswer() {
+        return answer;
+    }
+
+    public void setAnswer(String answer) {
+        this.answer = answer;
+    }
+}

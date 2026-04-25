@@ -1,60 +1,87 @@
 import './style.css'
-import javascriptLogo from './assets/javascript.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import { setupCounter } from './counter.js'
 
+// Render modern chatbot UI
 document.querySelector('#app').innerHTML = `
-<section id="center">
-  <div class="hero">
-    <img src="${heroImg}" class="base" width="170" height="179">
-    <img src="${javascriptLogo}" class="framework" alt="JavaScript logo"/>
-    <img src=${viteLogo} class="vite" alt="Vite logo" />
+  <div class="chat-container">
+    <div class="chat-header">
+      <div class="status-dot"></div>
+      <h2>AI Assistant</h2>
+    </div>
+    <div class="messages" id="messages">
+      <div class="message bot">Hello! How can I help you today?</div>
+    </div>
+    <div class="chat-footer">
+      <form id="chat-form">
+        <input type="text" id="user-input" placeholder="Type your message..." required autocomplete="off" />
+        <button type="submit" id="submit-btn">
+          <span>Send</span>
+        </button>
+      </form>
+      <div id="error-container"></div>
+    </div>
   </div>
-  <div>
-    <h1>Get started</h1>
-    <p>Edit <code>src/main.js</code> and save to test <code>HMR</code></p>
-  </div>
-  <button id="counter" type="button" class="counter"></button>
-</section>
+`;
 
-<div class="ticks"></div>
+const form = document.getElementById('chat-form');
+const input = document.getElementById('user-input');
+const messagesContainer = document.getElementById('messages');
+const submitBtn = document.getElementById('submit-btn');
+const errorContainer = document.getElementById('error-container');
 
-<section id="next-steps">
-  <div id="docs">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#documentation-icon"></use></svg>
-    <h2>Documentation</h2>
-    <p>Your questions, answered</p>
-    <ul>
-      <li>
-        <a href="https://vite.dev/" target="_blank">
-          <img class="logo" src=${viteLogo} alt="" />
-          Explore Vite
-        </a>
-      </li>
-      <li>
-        <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank">
-          <img class="button-icon" src="${javascriptLogo}" alt="">
-          Learn more
-        </a>
-      </li>
-    </ul>
-  </div>
-  <div id="social">
-    <svg class="icon" role="presentation" aria-hidden="true"><use href="/icons.svg#social-icon"></use></svg>
-    <h2>Connect with us</h2>
-    <p>Join the Vite community</p>
-    <ul>
-      <li><a href="https://github.com/vitejs/vite" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#github-icon"></use></svg>GitHub</a></li>
-      <li><a href="https://chat.vite.dev/" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#discord-icon"></use></svg>Discord</a></li>
-      <li><a href="https://x.com/vite_js" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#x-icon"></use></svg>X.com</a></li>
-      <li><a href="https://bsky.app/profile/vite.dev" target="_blank"><svg class="button-icon" role="presentation" aria-hidden="true"><use href="/icons.svg#bluesky-icon"></use></svg>Bluesky</a></li>
-    </ul>
-  </div>
-</section>
+function addMessage(text, sender, isTyping = false) {
+  const div = document.createElement('div');
+  div.className = `message ${sender} ${isTyping ? 'typing' : ''}`;
+  div.textContent = text;
+  messagesContainer.appendChild(div);
+  messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  return div;
+}
 
-<div class="ticks"></div>
-<section id="spacer"></section>
-`
+function showError(msg) {
+  errorContainer.innerHTML = `<div class="error-msg">${msg}</div>`;
+  setTimeout(() => {
+    errorContainer.innerHTML = '';
+  }, 5000);
+}
 
-setupCounter(document.querySelector('#counter'))
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const question = input.value.trim();
+  if (!question) return;
+
+  // Clear and disable
+  addMessage(question, 'user');
+  input.value = '';
+  input.disabled = true;
+  submitBtn.disabled = true;
+
+  // Typing indicator
+  const typingMsg = addMessage('Assistant is thinking...', 'bot', true);
+
+  try {
+    const response = await fetch('http://localhost:8081/api/assistant/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question })
+    });
+
+    if (!response.ok) {
+      throw new Error('Server responded with an error.');
+    }
+
+    const data = await response.json();
+
+    // Remove typing indicator and add response
+    messagesContainer.removeChild(typingMsg);
+    addMessage(data.answer || 'I am not sure how to answer that.', 'bot');
+
+  } catch (err) {
+    console.error('Fetch error:', err);
+    messagesContainer.removeChild(typingMsg);
+    showError('Could not connect to the assistant. Please ensure the backend is running.');
+  } finally {
+    input.disabled = false;
+    submitBtn.disabled = false;
+    input.focus();
+  }
+});
